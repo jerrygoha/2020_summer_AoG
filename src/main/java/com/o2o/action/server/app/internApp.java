@@ -6,8 +6,12 @@ import com.google.actions.api.response.ResponseBuilder;
 import com.google.actions.api.response.helperintent.SelectionCarousel;
 import com.google.api.services.actions_fulfillment.v2.model.*;
 import com.o2o.action.server.util.CommonUtil;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -19,6 +23,50 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class internApp extends DialogflowApp {
+
+//	public ArrayList<exData> readExcel() throws FileNotFoundException {
+//
+//		String path = internApp.class.getResource("").getPath();	//파일 경로
+//		ArrayList<exData> list = new ArrayList<exData>();
+//
+//		try{
+//			File file = new File(path + "TEAM SCHEDULE.xlsx");
+//
+//			FileInputStream fis = new FileInputStream(file);
+//			XSSFWorkbook workbook = new XSSFWorkbook(fis);
+//
+//			//엑셀 index는 0부터 시작
+//			int rowindex = 0;
+//			int colindex = 0;
+//
+//			//시트수
+//			XSSFSheet sheet = workbook.getSheet(0);
+//			//행의 수
+//			int rows = sheet.getPhysicalNumberOfRows();
+//			for(rowindex = 2; rowindex<rows; rowindex++){
+//
+//				exData ed = new exData();
+//
+//				//행 읽기
+//				XSSFRow row = sheet.getRow(rowindex);
+//				XSSFCell cell = row.getCell(2);
+//
+//				ed.setName(String.valueOf(row.getCell(0)));
+//
+//
+//			}
+//
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
+
+
+
+
+
+	public internApp() throws FileNotFoundException {
+	}
 
 	@ForIntent("Default Welcome Intent")
 	public ActionResponse defaultWelcome(ActionRequest request) throws ExecutionException, InterruptedException {
@@ -95,6 +143,7 @@ public class internApp extends DialogflowApp {
 		String nowDate = sd.format(new Date());	//현재시간
 
 
+
 		//db연동해서 날짜 체크
 		if(date.equals("어제")) {
 
@@ -126,6 +175,40 @@ public class internApp extends DialogflowApp {
 
 		return rb.build();
 	}
+
+	@ForIntent("TestLck_replay")
+	public ActionResponse replayLck(ActionRequest request) throws ExecutionException, InterruptedException {
+		ResponseBuilder rb = getResponseBuilder(request);
+
+		List<String> suggestions = new ArrayList<String>();
+		SimpleResponse simpleResponse = new SimpleResponse();
+		BasicCard basicCard = new BasicCard();
+
+		simpleResponse.setTextToSpeech("풀버전과 하이라이트 중 한가지를 선택해주세요.")
+				.setDisplayText("풀버전과 하이라이트 중 한가지를 선택해주세요.")
+		;
+
+		rb
+				.addSuggestions(new String[] {"풀버전", "하이라이트", })
+				.add(
+						new LinkOutSuggestion()
+								.setDestinationName("Suggestion Link")
+								.setUrl("https://assistant.google.com/"))
+				.add("풀버전과 하이라이트 중 한가지를 골라주세요. ")
+		;
+
+		basicCard
+				.setTitle("스케줄을 나타내는 제목입니다.")
+				.setFormattedText("스케줄을 나타내는 텍스트입니다.")
+				.setImage(new Image().setUrl("https://actions.o2o.kr/content/aiperson.gif")
+						.setAccessibilityText("home"));
+
+		rb.add(simpleResponse);
+		rb.add(basicCard);
+
+		return rb.build();
+	}
+
 
 }
 
