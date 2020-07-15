@@ -5,68 +5,22 @@ import com.google.actions.api.Capability;
 import com.google.actions.api.response.ResponseBuilder;
 import com.google.actions.api.response.helperintent.SelectionCarousel;
 import com.google.api.services.actions_fulfillment.v2.model.*;
+import com.google.gson.*;
 import com.o2o.action.server.util.CommonUtil;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import jdk.nashorn.internal.parser.JSONParser;
 
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 
 public class internApp extends DialogflowApp {
 
-//	public ArrayList<exData> readExcel() throws FileNotFoundException {
-//
-//		String path = internApp.class.getResource("").getPath();	//파일 경로
-//		ArrayList<exData> list = new ArrayList<exData>();
-//
-//		try{
-//			File file = new File(path + "TEAM SCHEDULE.xlsx");
-//
-//			FileInputStream fis = new FileInputStream(file);
-//			XSSFWorkbook workbook = new XSSFWorkbook(fis);
-//
-//			//엑셀 index는 0부터 시작
-//			int rowindex = 0;
-//			int colindex = 0;
-//
-//			//시트수
-//			XSSFSheet sheet = workbook.getSheet(0);
-//			//행의 수
-//			int rows = sheet.getPhysicalNumberOfRows();
-//			for(rowindex = 2; rowindex<rows; rowindex++){
-//
-//				exData ed = new exData();
-//
-//				//행 읽기
-//				XSSFRow row = sheet.getRow(rowindex);
-//				XSSFCell cell = row.getCell(2);
-//
-//				ed.setName(String.valueOf(row.getCell(0)));
-//
-//
-//			}
-//
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
-
-
-
-
-
-	public internApp() throws FileNotFoundException {
-	}
 
 	@ForIntent("Default Welcome Intent")
 	public ActionResponse defaultWelcome(ActionRequest request) throws ExecutionException, InterruptedException {
@@ -134,40 +88,82 @@ public class internApp extends DialogflowApp {
 
 
 	@ForIntent("Schedule_whatDay")
-	public ActionResponse whatDay(ActionRequest request) throws ExecutionException, InterruptedException {
+	public ActionResponse whatDay(ActionRequest request) throws ExecutionException, InterruptedException, ParseException {
 		ResponseBuilder rb = getResponseBuilder(request);
 		String date = CommonUtil.makeSafeString(request.getParameter("whatday"));
 		String team = CommonUtil.makeSafeString(request.getParameter("teamName"));
+
 		SimpleResponse simpleResponse = new SimpleResponse();
 		SimpleDateFormat sd = new SimpleDateFormat("yyyyMMdd"); //날짜 포멧 선언
 		String nowDate = sd.format(new Date());	//현재시간
+		Date current = new Date();
+		String currentDateSt = sd.format(current);
+		String calcDay;
+		int currentDateInt = Integer.parseInt(currentDateSt);
 
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(current);
 
-
-		//db연동해서 날짜 체크
-		if(date.equals("어제")) {
-
-		}else if(date.equals("오늘")){
-
-		}else if(date.equals("내일")){
-
-		}else if(date.equals("저번주")){
-
-		}else if(date.equals("이번주")){
-
-		}else if(date.equals("다음주")){
-
-		}else if(date.equals("저번달")){
-
-		}else if(date.equals("이번달")){
-
-		}else if(date.equals("다음달")){
-
+		//날짜 체크
+		switch (date) {
+			case "어제": {
+				cal.add(Calendar.DATE, -1);
+				dateCall yesterday = new dateCall(cal.getTime());
+				calcDay = yesterday.calcDate();
+				cal.setTime(current);
+				break;
+			}
+			case "오늘":
+			case "이번주":
+			case "이번달": {
+				dateCall today = new dateCall(current);
+				calcDay = today.calcDate();
+				break;
+			}
+			case "내일": {
+				cal.add(Calendar.DATE, 1);
+				dateCall tomorrow = new dateCall(cal.getTime());
+				calcDay = tomorrow.calcDate();
+				cal.setTime(current);
+				break;
+			}
+			case "저번주": {
+				cal.add(Calendar.WEEK_OF_MONTH, -1);
+				dateCall lastweek = new dateCall(cal.getTime());
+				calcDay = lastweek.calcDate();
+				cal.setTime(current);
+				break;
+			}
+			case "다음주": {
+				cal.add(Calendar.WEEK_OF_MONTH, 1);
+				dateCall nextweek = new dateCall(cal.getTime());
+				calcDay = nextweek.calcDate();
+				cal.setTime(current);
+				break;
+			}
+			case "저번달": {
+				cal.add(Calendar.MONTH, -1);
+				dateCall lastmonth = new dateCall(cal.getTime());
+				calcDay = lastmonth.calcDate();
+				cal.setTime(current);
+				break;
+			}
+			case "다음달": {
+				cal.add(Calendar.MONTH, 1);
+				dateCall nextmonth = new dateCall(cal.getTime());
+				calcDay = nextmonth.calcDate();
+				cal.setTime(current);
+				break;
+			}
+			default:
+				throw new IllegalStateException("Unexpected value: " + date);
 		}
 
 
-		simpleResponse.setTextToSpeech(date + team +" 의 일정을 보여드릴게요.")
-				.setDisplayText(date + team + " 의 일정을 보여드릴게요.")
+
+
+		simpleResponse.setTextToSpeech(calcDay + team +" 의 일정을 보여드릴게요.")
+				.setDisplayText(calcDay + team + " 의 일정을 보여드릴게요.")
 		;
 
 		rb.add(simpleResponse);
