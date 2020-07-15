@@ -113,11 +113,16 @@ public class internApp extends DialogflowApp {
 				cal.setTime(current);
 				break;
 			}
-			case "오늘":
-			case "이번주":
+			case "오늘":{
+				calcDay = "today";
+				break;
+			}
+			case "이번주":{
+				calcDay = "thisweek";
+				break;
+			}
 			case "이번달": {
-				dateCall today = new dateCall(current);
-				calcDay = today.calcDate();
+				calcDay = "thismonth";
 				break;
 			}
 			case "내일": {

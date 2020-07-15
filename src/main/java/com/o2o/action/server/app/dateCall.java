@@ -947,33 +947,36 @@ public class dateCall {
             Date inputDate = nowTime.parse(currentDateSt);
 
             //날짜 비교
-            long diffday;
+            int diffday;
             int compare = current.compareTo(inputDate);
-            if (compare > 0) { //미래
-                diffday = (inputDate.getTime() - current.getTime()) / (24 * 60 * 60 * 1000);
+            if (compare < 0) { //미래
+                diffday = (int) ((inputDate.getTime() - current.getTime()) / (24 * 60 * 60 * 1000));
 
                 if (diffday > 5) {
                     if (diffday > 26) {
                         result = "nextmonth";
                     }
                     result = "nextweek";
+                }else{
+                    result = "tomorrow" + diffday;
                 }
-                result = "tomorrow";
-            } else if (compare < 0) { //과거
-                diffday = (current.getTime() - inputDate.getTime()) / (24 * 60 * 60 * 1000);
+
+            } else if (compare > 0) { //과거
+                diffday = (int) ((current.getTime() - inputDate.getTime()) / (24 * 60 * 60 * 1000));
 
                 if (diffday < -5) {
                     if (diffday < -26) {
                         result = "lastmonth";
                     }
                     result =  "lastweek";
+                }else{
+                    result =  "yesterday" + diffday;
                 }
-                result =  "yesterday";
 
             } else { //오늘
                 result =  "today";
             }
-        }catch (ParseException e){
+        }catch (ParseException ignored){
 
         }
         return result;
