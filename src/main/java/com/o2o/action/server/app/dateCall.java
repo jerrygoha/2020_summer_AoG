@@ -920,23 +920,7 @@ public class dateCall {
     public String calcDate() {
         
         String result = null;
-        JsonParser jsonParser = new JsonParser();
-        JsonArray jsonArray = (JsonArray) jsonParser.parse(strr);
 
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject object = (JsonObject) jsonArray.get(i);
-            date[i] = object.get("DATE").getAsString();
-            t1[i] = object.get("T1").getAsString();
-            gen[i] = object.get("GEN").getAsString();
-            drx[i] = object.get("DRX").getAsString();
-            dwg[i] = object.get("DWG").getAsString();
-            kt[i] = object.get("KT").getAsString();
-            af[i] = object.get("AF").getAsString();
-            sp[i] = object.get("SP").getAsString();
-            hle[i] = object.get("HLE").getAsString();
-            dyn[i] = object.get("DYN").getAsString();
-            sb[i] = object.get("SB").getAsString();
-        }
 
         //현재 날짜 저장
         try {
@@ -980,6 +964,46 @@ public class dateCall {
 
         }
         return result;
+    }
+
+    public void serch(){
+
+        JsonParser jsonParser = new JsonParser();
+        JsonArray jsonArray = (JsonArray) jsonParser.parse(strr);
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject object = (JsonObject) jsonArray.get(i);
+            date[i] = object.get("DATE").getAsString();
+            t1[i] = object.get("T1").getAsString();
+            gen[i] = object.get("GEN").getAsString();
+            drx[i] = object.get("DRX").getAsString();
+            dwg[i] = object.get("DWG").getAsString();
+            kt[i] = object.get("KT").getAsString();
+            af[i] = object.get("AF").getAsString();
+            sp[i] = object.get("SP").getAsString();
+            hle[i] = object.get("HLE").getAsString();
+            dyn[i] = object.get("DYN").getAsString();
+            sb[i] = object.get("SB").getAsString();
+        }
+//        String[] teamName = new String[9];
+//        for(int row = 0; row < 9; row++){
+//            JsonObject object = (JsonObject) jsonArray.get(1);
+//            Set key = object.keySet();
+//            teamName[0] = object.get()
+//        }
+        String[] teamName = new String[9];
+
+
+        int[][] schedule = new int[10][jsonArray.size()]; //[row][column]
+
+        for(int row = 0; row < 10; row++ ){
+            for(int column = 0; column < jsonArray.size(); column++){
+                JsonObject object = (JsonObject) jsonArray.get(column);
+                //schedule[row][column] = object.get()
+
+            }
+        }
+
     }
 
 

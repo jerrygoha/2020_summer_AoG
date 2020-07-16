@@ -21,6 +21,7 @@ import java.util.logging.Level;
 
 public class internApp extends DialogflowApp {
 
+	private String mediatype = null;
 
 	@ForIntent("Default Welcome Intent")
 	public ActionResponse defaultWelcome(ActionRequest request) throws ExecutionException, InterruptedException {
@@ -38,13 +39,13 @@ public class internApp extends DialogflowApp {
 		;
 
 		rb
-				.add("These are suggestion chips.")
+
 				.addSuggestions(new String[] {"경기 일정", "다시보기", "실시간 중계", "전적 및 데이터 확인"})
 				.add(
 						new LinkOutSuggestion()
 								.setDestinationName("Suggestion Link")
 								.setUrl("https://assistant.google.com/"))
-				.add("Which type of response would you like to see next?")
+				.add("어떤 서비스를 이용하고싶으신가요?")
 		;
 
 
@@ -79,15 +80,16 @@ public class internApp extends DialogflowApp {
 			.setFormattedText("스케줄을 나타내는 텍스트입니다.")
 			.setImage(new Image().setUrl("https://actions.o2o.kr/content/aiperson.gif")
 					.setAccessibilityText("home"));
+			rb.add(basicCard);
 
 			rb.add(simpleResponse);
-			rb.add(basicCard);
+
 
 			return rb.build();
 			}
 
 
-	@ForIntent("Schedule_whatDay")
+	@ForIntent("whatDay")
 	public ActionResponse whatDay(ActionRequest request) throws ExecutionException, InterruptedException, ParseException {
 		ResponseBuilder rb = getResponseBuilder(request);
 		String date = CommonUtil.makeSafeString(request.getParameter("whatday"));
@@ -177,20 +179,86 @@ public class internApp extends DialogflowApp {
 		return rb.build();
 	}
 
-	@ForIntent("TestLck_replay")
-	public ActionResponse replayLck(ActionRequest request) throws ExecutionException, InterruptedException {
+	@ForIntent("selectFullHighlight")
+	public ActionResponse selectFH(ActionRequest request) throws ExecutionException, InterruptedException {
 		ResponseBuilder rb = getResponseBuilder(request);
 
 		List<String> suggestions = new ArrayList<String>();
 		SimpleResponse simpleResponse = new SimpleResponse();
 		BasicCard basicCard = new BasicCard();
+		mediatype = CommonUtil.makeSafeString(request.getParameter("fullorhighlight"));
 
-		simpleResponse.setTextToSpeech("풀버전과 하이라이트 중 한가지를 선택해주세요.")
-				.setDisplayText("풀버전과 하이라이트 중 한가지를 선택해주세요.")
+		simpleResponse.setTextToSpeech("그럼 이제 보고싶은 날짜를 말씀해주시겠어요?")
+				.setDisplayText("그럼 이제 보고싶은 날짜를 말씀해주시겠어요?")
+		;
+
+
+		rb.add(simpleResponse);
+
+
+		return rb.build();
+	}
+
+	@ForIntent("selectYouTubeOrTwitch")
+	public ActionResponse selectYT(ActionRequest request) throws ExecutionException, InterruptedException {
+		ResponseBuilder rb = getResponseBuilder(request);
+
+		SimpleResponse simpleResponse = new SimpleResponse();
+		String selectYT = CommonUtil.makeSafeString(request.getParameter("selectyt"));
+
+		switch (selectYT){
+			case "naver" :	//네이버 실시간 연결
+				rb
+						.add("naver sports")
+						.add(
+								new BasicCard()
+										.setTitle("네이버 스포츠 실시간 연결")
+										.setSubtitle("네이버 스포츠 lck 실시간 중계 페이지로 이동합니다.")
+										.setImage(
+												new Image()
+														.setUrl(
+																"https://storage.googleapis.com/actionsresources/logo_assistant_2x_64dp.png")
+														.setAccessibilityText("Image alternate text"))
+										.setImageDisplayOptions("CROPPED")
+										.setButtons(
+												new ArrayList<Button>(
+														Arrays.asList(
+																new Button()
+																		.setTitle("방송 보러 가기")
+																		.setOpenUrlAction(
+																				new OpenUrlAction().setUrl("https://sports.news.naver.com/esports/index.nhn"))))))
+						.add("Which response would you like to see next?");
+				break;
+			case "twitch" :		//트위치 실시간으로 연결
+				rb
+						.add("twitch")
+						.add(
+								new BasicCard()
+										.setTitle("트위치 실시간 연결")
+										.setSubtitle("트위치 lck 실시간 중계 페이지로 이동합니다.")
+										.setImage(
+												new Image()
+														.setUrl(
+																"https://storage.googleapis.com/actionsresources/logo_assistant_2x_64dp.png")
+														.setAccessibilityText("Image alternate text"))
+										.setImageDisplayOptions("CROPPED")
+										.setButtons(
+												new ArrayList<Button>(
+														Arrays.asList(
+																new Button()
+																		.setTitle("방송 보러 가")
+																		.setOpenUrlAction(
+																				new OpenUrlAction().setUrl("https://www.twitch.tv/lck_korea"))))))
+						.add("Which response would you like to see next?");
+				break;
+		}
+
+		simpleResponse.setTextToSpeech("네이버와 트위치 중 실시간 중계를 시청하실 플랫폼을 선택해주세요.")
+				.setDisplayText("네이버와 트위치 중 실시간 중계를 시청하실 플랫폼을 선택해주세요.")
 		;
 
 		rb
-				.addSuggestions(new String[] {"풀버전", "하이라이트", })
+				.addSuggestions(new String[] {"네이버", "트위치", })
 				.add(
 						new LinkOutSuggestion()
 								.setDestinationName("Suggestion Link")
@@ -198,18 +266,37 @@ public class internApp extends DialogflowApp {
 				.add("풀버전과 하이라이트 중 한가지를 골라주세요. ")
 		;
 
-		basicCard
-				.setTitle("스케줄을 나타내는 제목입니다.")
-				.setFormattedText("스케줄을 나타내는 텍스트입니다.")
-				.setImage(new Image().setUrl("https://actions.o2o.kr/content/aiperson.gif")
-						.setAccessibilityText("home"));
+
 
 		rb.add(simpleResponse);
-		rb.add(basicCard);
+
 
 		return rb.build();
 	}
 
+	@ForIntent("inputDate_replay")
+	public ActionResponse replayDate(ActionRequest request) throws ExecutionException, InterruptedException {
+		ResponseBuilder rb = getResponseBuilder(request);
+		SimpleDateFormat sd = new SimpleDateFormat("yyyyMMdd");
+
+		List<String> suggestions = new ArrayList<String>();
+		SimpleResponse simpleResponse = new SimpleResponse();
+		BasicCard basicCard = new BasicCard();
+
+		String replaydate = CommonUtil.makeSafeString(request.getParameter("date"));
+		//2021-07-14T12:00:00+09:00 형태로 받아온다.
+
+
+		simpleResponse.setTextToSpeech(replaydate + " 경기를 보고싶다는 말씀이시죠? ")
+				.setDisplayText(replaydate + " 경기를 보고싶다는 말씀이시죠? ")
+		;
+
+
+		rb.add(simpleResponse);
+
+
+		return rb.build();
+	}
 
 }
 
