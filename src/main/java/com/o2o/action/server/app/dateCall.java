@@ -1,32 +1,18 @@
 package com.o2o.action.server.app;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class dateCall {
 
     private Date now;
     private String[] date = new String[68];
-    private String[] t1 = new String[68];
-    private String[] gen = new String[68];
-    private String[] drx = new String[68];
-    private String[] dwg = new String[68];
-    private String[] kt = new String[68];
-    private String[] af = new String[68];
-    private String[] sp = new String[68];
-    private String[] hle = new String[68];
-    private String[] dyn = new String[68];
-    private String[] sb = new String[68];
+
     private String strr = "[\n" +
             "   {\n" +
             "      \"DATE\":20200617,\n" +
@@ -913,14 +899,15 @@ public class dateCall {
             "      \"SB\":0\n" +
             "   }\n" +
             "]";
-    public dateCall(Date current) {
-        this.now = current;
+    public dateCall() {
+
     }
 
-    public String calcDate() {
-        
-        String result = null;
+    public String calcDate(Date currents) {
 
+        this.now = currents;
+
+        String result = null;
 
         //현재 날짜 저장
         try {
@@ -966,7 +953,28 @@ public class dateCall {
         return result;
     }
 
-    public void serch(){
+    public int[][] schedule(){
+
+        JsonParser jsonParser = new JsonParser();
+        JsonArray jsonArray = (JsonArray) jsonParser.parse(strr);
+
+        String[] teamName = {"T1", "GEN", "DRX", "DWG", "KT", "AF", "SP", "HLE", "DYN", "SB"};
+
+        int[][] schedule = new int[10][jsonArray.size()]; //[row][column]
+
+        for(int row = 0; row < 10; row++ ){
+            for(int column = 0; column < jsonArray.size(); column++){
+                JsonObject object = (JsonObject) jsonArray.get(column);
+                schedule[row][column] = object.get(teamName[row]).getAsInt();
+
+            }
+        }
+
+        return schedule;
+
+    }
+
+    public String[] date(){
 
         JsonParser jsonParser = new JsonParser();
         JsonArray jsonArray = (JsonArray) jsonParser.parse(strr);
@@ -974,37 +982,9 @@ public class dateCall {
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject object = (JsonObject) jsonArray.get(i);
             date[i] = object.get("DATE").getAsString();
-            t1[i] = object.get("T1").getAsString();
-            gen[i] = object.get("GEN").getAsString();
-            drx[i] = object.get("DRX").getAsString();
-            dwg[i] = object.get("DWG").getAsString();
-            kt[i] = object.get("KT").getAsString();
-            af[i] = object.get("AF").getAsString();
-            sp[i] = object.get("SP").getAsString();
-            hle[i] = object.get("HLE").getAsString();
-            dyn[i] = object.get("DYN").getAsString();
-            sb[i] = object.get("SB").getAsString();
-        }
-//        String[] teamName = new String[9];
-//        for(int row = 0; row < 9; row++){
-//            JsonObject object = (JsonObject) jsonArray.get(1);
-//            Set key = object.keySet();
-//            teamName[0] = object.get()
-//        }
-        String[] teamName = new String[9];
 
-
-        int[][] schedule = new int[10][jsonArray.size()]; //[row][column]
-
-        for(int row = 0; row < 10; row++ ){
-            for(int column = 0; column < jsonArray.size(); column++){
-                JsonObject object = (JsonObject) jsonArray.get(column);
-                //schedule[row][column] = object.get()
-
-            }
         }
 
+        return date;
     }
-
-
 }
