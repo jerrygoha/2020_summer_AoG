@@ -11,7 +11,7 @@ import java.util.Date;
 public class dateCall {
 
     private Date now;
-    private String[] date = new String[68];
+    private int[] date = new int[70];
 
     private String strr = "[\n" +
             "   {\n" +
@@ -925,9 +925,11 @@ public class dateCall {
 
                 if (diffday > 5) {
                     if (diffday > 26) {
-                        result = "nextmonth";
+                        result = "nextmonth" + diffday;
+                    }else{
+                        result = "nextweek" + diffday;
                     }
-                    result = "nextweek";
+
                 }else{
                     result = "tomorrow" + diffday;
                 }
@@ -935,11 +937,13 @@ public class dateCall {
             } else if (compare > 0) { //과거
                 diffday = (int) ((current.getTime() - inputDate.getTime()) / (24 * 60 * 60 * 1000));
 
-                if (diffday < -5) {
-                    if (diffday < -26) {
-                        result = "lastmonth";
+                if (diffday > 5) {
+                    if (diffday > 26) {
+                        result = "lastmonth" + diffday;
+                    }else{
+                        result =  "lastweek" + diffday;
                     }
-                    result =  "lastweek";
+
                 }else{
                     result =  "yesterday" + diffday;
                 }
@@ -974,14 +978,14 @@ public class dateCall {
 
     }
 
-    public String[] date(){
+    public int[] date(){
 
         JsonParser jsonParser = new JsonParser();
         JsonArray jsonArray = (JsonArray) jsonParser.parse(strr);
 
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject object = (JsonObject) jsonArray.get(i);
-            date[i] = object.get("DATE").getAsString();
+            date[i] = object.get("DATE").getAsInt();
 
         }
 

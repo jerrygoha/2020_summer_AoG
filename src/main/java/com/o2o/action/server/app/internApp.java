@@ -17,7 +17,7 @@ public class internApp extends DialogflowApp {
 	private String mediatype = null;
 	private final String[] teamName = {"T1", "GEN", "DRX", "DWG", "KT", "AF", "SP", "HLE", "DYN", "SB"};
 	private final int[][] schedule = dtCall.schedule();
-	private final String[] dayTable = dtCall.date();
+	private final int[] dayTable = dtCall.date();
 
 	@ForIntent("Default Welcome Intent")
 	public ActionResponse defaultWelcome(ActionRequest request) throws ExecutionException, InterruptedException {
@@ -31,7 +31,7 @@ public class internApp extends DialogflowApp {
 		SimpleResponse simpleResponse = new SimpleResponse();
 
 		simpleResponse.setTextToSpeech("안녕하세요, 원하시는 서비스를 말씀해주세요.")
-				.setDisplayText("안녕하세요 원하시는 서비스를 말씀해주세요.  팀이름테스트" + teamName[1] + "스케줄테스트" + Integer.toString(schedule[1][1])+ "날짜테스" +dayTable[1])
+				.setDisplayText("안녕하세요 원하시는 서비스를 말씀해주세요.  팀이름테스트" + teamName[0] + "스케줄테스트" + Integer.toString(schedule[0][0])+ "날짜테스" +dayTable[0])
 		;
 
 		//테스트
@@ -210,20 +210,20 @@ public class internApp extends DialogflowApp {
 		String replaydate = CommonUtil.makeSafeString(request.getParameter("date")).substring(0,10).replace("-", "").replace("2021", "2020");
 		//2021-07-14T12:00:00+09:00 형태로 받아온다.
 		//위 로직 거치면 20200714 뱉
-
-
-
-		boolean isthere = false; //기간 유효성 판단
+		int replaydateInt = Integer.parseInt(replaydate);
 
 		int count = 0;
 		for(int i = 0; i< dayTable.length; i++){ //날짜테이블
-
-			if(dayTable[i].equals(replaydate)){	//날짜찾음
+			count = 0 ;
+			if(dayTable[i] == replaydateInt){	//날짜찾음
 				for(int j = 0; j < teamName.length; j++){
-					count += schedule[i][j];
+					if(schedule[i][j] !=0){
+						count = schedule[i][j];
+						break;
+					}
 				}
 				if(count != 0 ){	//해당 날짜에 경기 있을때
-					isthere = true;
+
 					if (mediatype.equals("highlight")) { 	//하이라이트
 						rb
 								.add(
@@ -238,7 +238,6 @@ public class internApp extends DialogflowApp {
 																				.setOpenUrlAction(
 																						new OpenUrlAction().setUrl("https://www.youtube.com/results?search_query=우리은행++lck+하이라이트+" + replaydate))))))
 						;
-						break;
 					}else{
 						rb
 								.add(
@@ -253,8 +252,8 @@ public class internApp extends DialogflowApp {
 																				.setOpenUrlAction(
 																						new OpenUrlAction().setUrl("https://www.youtube.com/results?search_query=lck+full+" + replaydate))))))
 						;
-						break;
 					}
+					break;
 
 				}
 			}
@@ -264,12 +263,12 @@ public class internApp extends DialogflowApp {
 			simpleResponse.setTextToSpeech("해당 일자는 경기가 없습니다. 다시한번 날짜를 말씀해주세요.")
 					.setDisplayText("해당 일자는 경기가 없습니다. 다시한번 날짜를 말씀해주세요.")
 			;
-			rb.removeContext("inputDate_replay");
+			//rb.removeContext("inputDate_replay");
 		}
 
-		simpleResponse.setTextToSpeech(replaydate + " 경기를 " +  mediatype + " 으로 보고싶다는 말씀이시죠? ")
-				.setDisplayText(replaydate + " 경기를 " +  mediatype + " 으로 보고싶다는 말씀이시죠? ")
-		;
+//		simpleResponse.setTextToSpeech(replaydate + " 경기를 " +  mediatype + " 으로 보고싶다는 말씀이시죠? ")
+//				.setDisplayText(replaydate + " 경기를 " +  mediatype + " 으로 보고싶다는 말씀이시죠? ")
+//		;
 
 
 		rb.add(simpleResponse);
