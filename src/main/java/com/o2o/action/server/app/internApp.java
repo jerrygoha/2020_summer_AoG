@@ -220,7 +220,7 @@ public class internApp extends DialogflowApp {
 
 			if(dayTable[i].equals(replaydate)){	//날짜찾음
 				for(int j = 0; j < teamName.length; j++){
-					count =+ schedule[i][j];
+					count += schedule[i][j];
 				}
 				if(count != 0 ){	//해당 날짜에 경기 있을때
 					isthere = true;
@@ -260,7 +260,7 @@ public class internApp extends DialogflowApp {
 			}
 
 		}
-		if( count == 0){
+		if( count == 0 ){
 			simpleResponse.setTextToSpeech("해당 일자는 경기가 없습니다. 다시한번 날짜를 말씀해주세요.")
 					.setDisplayText("해당 일자는 경기가 없습니다. 다시한번 날짜를 말씀해주세요.")
 			;
