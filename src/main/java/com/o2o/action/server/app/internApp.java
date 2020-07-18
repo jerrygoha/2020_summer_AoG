@@ -216,15 +216,15 @@ public class internApp extends DialogflowApp {
 		boolean isthere = false; //기간 유효성 판단
 
 		int count = 0;
-		for(int i = 0; i< dayTable.length; i++){
+		for(int i = 0; i< dayTable.length; i++){ //날짜테이블
 
-			if(dayTable[i].equals(replaydate)){
+			if(dayTable[i].equals(replaydate)){	//날짜찾음
 				for(int j = 0; j < teamName.length; j++){
 					count =+ schedule[i][j];
 				}
-				if(count != 0 ){
+				if(count != 0 ){	//해당 날짜에 경기 있을때
 					isthere = true;
-					if (mediatype.equals("highlight")) { //해당 날짜에 경기 있을때
+					if (mediatype.equals("highlight")) { 	//하이라이트
 						rb
 								.add(
 										new BasicCard()
@@ -238,7 +238,7 @@ public class internApp extends DialogflowApp {
 																				.setOpenUrlAction(
 																						new OpenUrlAction().setUrl("https://www.youtube.com/results?search_query=우리은행++lck+하이라이트+" + replaydate))))))
 						;
-
+						break;
 					}else{
 						rb
 								.add(
@@ -253,16 +253,18 @@ public class internApp extends DialogflowApp {
 																				.setOpenUrlAction(
 																						new OpenUrlAction().setUrl("https://www.youtube.com/results?search_query=lck+full+" + replaydate))))))
 						;
+						break;
 					}
-					count = 0;
-					break;
-				}else{
 
 				}
 			}
+
+		}
+		if( count == 0){
 			simpleResponse.setTextToSpeech("해당 일자는 경기가 없습니다. 다시한번 날짜를 말씀해주세요.")
 					.setDisplayText("해당 일자는 경기가 없습니다. 다시한번 날짜를 말씀해주세요.")
 			;
+			rb.removeContext("inputDate_replay");
 		}
 
 		simpleResponse.setTextToSpeech(replaydate + " 경기를 " +  mediatype + " 으로 보고싶다는 말씀이시죠? ")
