@@ -6,12 +6,15 @@ import com.google.gson.JsonParser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class dateCall {
 
     private Date now;
     private int[] date = new int[70];
+    private int[][] schedule;
 
     private String strr = "[\n" +
             "   {\n" +
@@ -964,7 +967,7 @@ public class dateCall {
 
         String[] teamName = {"T1", "GEN", "DRX", "DWG", "KT", "AF", "SP", "HLE", "DYN", "SB"};
 
-        int[][] schedule = new int[10][jsonArray.size()]; //[row][column]
+        schedule = new int[10][jsonArray.size()]; //[row][column]
 
         for(int row = 0; row < 10; row++ ){
             for(int column = 0; column < jsonArray.size(); column++){
@@ -990,5 +993,186 @@ public class dateCall {
         }
 
         return date;
+    }
+
+    public String gameDaySchedule(Date yourDate) {
+
+        //date -> int 날짜 schedule -> 2차원 int 경기스케줄
+
+        SimpleDateFormat input = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat day = new SimpleDateFormat("E");
+
+        String inputdate = input.format(yourDate);  //yymmdd형태로 날짜 받음
+        String inputday = day.format(yourDate); //E형태로 날짜 받음
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(yourDate);
+
+        Date calSevenday;
+
+        String text;
+        String dayofinput = "";
+
+            calSevenday = cal.getTime();
+            dayofinput = input.format(calSevenday);
+            String year = dayofinput.substring(0, 4);
+            String month = dayofinput.substring(4, 6);
+            String date = dayofinput.substring(6, 8);
+            text = "__"+year+"년"+month+"월"+date+"일 "+inputday+" 경기__  " + vs(dayofinput);
+
+        return text;
+    }
+
+    public String gameWeekSchedule(String whatYouWant, Date yourDate) throws ParseException {
+
+        //date -> int 날짜 schedule -> 2차원 int 경기스케줄
+        String[] teamName = {"T1", "GEN", "DRX", "DWG", "KT", "AF", "SP", "HLE", "DYN", "SB"};
+        String want = whatYouWant;
+
+        String returnString = "";
+
+        //주 입력 받았으면 해당 주 전부다 출력하기위해 해당 주 의 월요일 날짜를 도출
+        SimpleDateFormat input = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat day = new SimpleDateFormat("E");
+
+        String inputdate = input.format(yourDate);  //yymmdd형태로 날짜 받음
+        String inputday = day.format(yourDate); //E형태로 날짜 받음
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(yourDate);
+        String re =  inputday + "오류";
+        Date calcDate;
+
+        switch (inputday){
+
+            case "Mon" :
+                calcDate = cal.getTime();
+                re = input.format(calcDate);
+                break;
+            case "Tue" :
+                cal.add(Calendar.DATE, -1);
+                calcDate = cal.getTime();
+                re = input.format(calcDate);
+                break;
+            case "Wen" :
+                cal.add(Calendar.DATE, -2);
+                calcDate = cal.getTime();
+                re = input.format(calcDate);
+                break;
+            case "Thu" :
+                cal.add(Calendar.DATE, -3);
+                calcDate = cal.getTime();
+                re = input.format(calcDate);
+                break;
+            case "Fri" :
+                cal.add(Calendar.DATE, -4);
+                calcDate = cal.getTime();
+                re = input.format(calcDate);
+                break;
+            case "Sat" :
+                cal.add(Calendar.DATE, -5);
+                calcDate = cal.getTime();
+                re = input.format(calcDate);
+                break;
+            case "Sun" :
+                cal.add(Calendar.DATE, -6);
+                calcDate = cal.getTime();
+                re = input.format(calcDate);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + inputday);
+        }
+        //re -> 해당 주 월요일
+
+        //스케줄 작성
+
+
+        Date calSevenday;
+
+        String[] text = new String[7];
+        String[] week = {"월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"};
+        String dayofinput = "";
+        int k = 0;
+        for(int i = 0; i<7; i++){
+            cal.add(Calendar.DATE, k);
+            calSevenday = cal.getTime();
+            dayofinput = input.format(calSevenday);
+            String year = dayofinput.substring(0, 4);
+            String month = dayofinput.substring(4, 6);
+            String date = dayofinput.substring(6, 8);
+            text[i] = "__"+year+"년"+month+"월"+date+"일 "+week[i]+" 경기__  " + vs(dayofinput);
+            if(k==0){
+                k++;
+            }
+        }
+
+        //1라운드 2라운드 경기 팀 임시저장
+
+
+
+        String test = text[0]+"  \n"+ text[1]+"  \n"+ text[2]+"  \n" + text[3]+"  \n" + text[4]+"  \n" + text[5]+"  \n" + text[6];
+
+
+
+
+        return test;
+    }
+
+    public String vs(String dayofinput){
+        //date  -> 입력받은날짜
+        String dateinputforschedule = dayofinput;
+
+        String[] teamName = {"T1", "GEN", "DRX", "DWG", "KT", "AF", "SP", "HLE", "DYN", "SB"};
+
+        int[] daySchedull = new int[teamName.length]; //하루 스케줄 임시저장
+        for(int i = 0; i<date.length; i++){
+            if(date[i]==Integer.parseInt(dateinputforschedule)){
+                for(int j = 0; j<teamName.length; j++){
+                    System.out.println(schedule[j][i]);
+                    System.out.println();
+                    daySchedull[j] = schedule[j][i];
+                }
+                break;
+            }
+        }
+
+        String[] firstRound = {"NoGame", "NoGame"};
+        String[] secondRound = {"NoGame", "NoGame"};
+
+        int fi = 0;
+        int si = 0;
+        for (int k = 0 ; k<teamName.length; k++) {
+            if (daySchedull[k] == 1) {
+                firstRound[fi] = teamName[k];
+                if(fi!=2){
+                    fi++;
+                }
+            } else if (daySchedull[k] == 2) {
+                secondRound[si] = teamName[k];
+                if(si!=2){
+                    si++;
+                }
+            }
+        }
+
+        return  "  \n[1 Round] "+ firstRound[0]+" vs "+firstRound[1]+"  \n[2 Round] "+secondRound[0]+" vs "+secondRound[1];
+    }
+
+    public int findSchedule(int input) {
+        String[] teamName = {"T1", "GEN", "DRX", "DWG", "KT", "AF", "SP", "HLE", "DYN", "SB"};
+        int replaydateInt = input;
+        int count = 0;
+        for (int i = 0; i < date.length; i++) { //날짜테이블
+
+            if (date[i] == replaydateInt) {    //날짜찾음
+                for (int k = 0; k < teamName.length; k++) {
+                    if (schedule[k][i] != 0) {
+                        count = schedule[k][i];
+                        return count;
+                    }
+                }return count;
+            }
+
+        }return count;
     }
 }
