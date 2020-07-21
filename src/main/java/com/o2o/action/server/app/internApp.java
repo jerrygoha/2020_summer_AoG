@@ -35,7 +35,7 @@ public class internApp extends DialogflowApp {
 				.setDisplayText("안녕하세요 원하시는 서비스를 말씀해주세요.")
 		;
 		rb
-				.add("안녕하세요! 롤토지지입니다! 아래 키워드를 참고하여 말해보세요! ^오^ ")
+				.add("안녕하세요! 롤 E-sports 입니다! 아래 키워드를 참고하여 말해보세요! ")
 				.add(
 						new BasicCard()
 								.setImage(
@@ -43,7 +43,7 @@ public class internApp extends DialogflowApp {
 												.setUrl("https://actions.o2o.kr/devsvr5/image/tenor.gif")
 												.setAccessibilityText("Image alternate text"))
 								.setImageDisplayOptions("CROPPED"))
-				.add("아래의 간단한 키워드를 참고해주세요. 전적 및 데이터는 미구현입니다.");
+				.add("아래의 간단한 키워드를 참고해주세요.");
 
 
 		rb
@@ -82,7 +82,7 @@ public class internApp extends DialogflowApp {
 						new LinkOutSuggestion()
 								.setDestinationName("Suggestion Link")
 								.setUrl("https://assistant.google.com/"))
-				.add("현재는 간단한 일정만 가능합니다.(향후 추가 예정)")
+				.add("현재는 간단한 일정만 가능합니다.")
 		;
 
 
@@ -290,7 +290,8 @@ public class internApp extends DialogflowApp {
 		String repldate = CommonUtil.makeSafeString(request.getParameter("date-time")).substring(0,10).replaceAll("-", "").replace("2021", "2020");
 		//2020-07-12T12:00:00+09:00
 		//20200712
-
+		String inmonth = repldate.substring(4,6);
+		String inday = repldate.substring(6);
 		int replaydateInt = Integer.parseInt(repldate);
 
 		int count = dtCall.findSchedule(replaydateInt);
@@ -306,7 +307,7 @@ public class internApp extends DialogflowApp {
 																	new CarouselBrowseItem()
 																			.setTitle( repldate +" 하이라이트 보기")
 																			.setDescription("LCK - 하이라이트")
-																			.setOpenUrlAction(new OpenUrlAction().setUrl("https://www.youtube.com/results?search_query=우리은행++lck+하이라이트" + repldate))
+																			.setOpenUrlAction(new OpenUrlAction().setUrl("https://www.youtube.com/results?search_query=우리은행++lck+h/l+" + inmonth+"."+inday))
 																			.setImage(
 																					new Image()
 																							.setUrl(
@@ -316,7 +317,7 @@ public class internApp extends DialogflowApp {
 																	new CarouselBrowseItem()
 																			.setTitle( repldate + " 풀버전 보기")
 																			.setDescription("LCK - 풀버전")
-																			.setOpenUrlAction(new OpenUrlAction().setUrl("https://www.youtube.com/results?search_query=lck+full+" + repldate))
+																			.setOpenUrlAction(new OpenUrlAction().setUrl("https://www.youtube.com/results?search_query=lck+full+" + inmonth+"."+inday))
 																			.setImage(
 																					new Image()
 																							.setUrl(
